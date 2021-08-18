@@ -4,8 +4,17 @@
  * and open the template in the editor.
  */
 package ventanas;
+
 import java.sql.*;
 import javax.swing.JOptionPane;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.awt.HeadlessException;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 /**
  *
@@ -17,7 +26,7 @@ public class RegistroAlumnos extends javax.swing.JFrame {
      * Creates new form RegistroAlumnos
      */
     public RegistroAlumnos() {
-        initComponents();        
+        initComponents();
         this.setLocationRelativeTo(null);
     }
 
@@ -41,6 +50,7 @@ public class RegistroAlumnos extends javax.swing.JFrame {
         txt_buscar = new javax.swing.JTextField();
         jButton4 = new javax.swing.JButton();
         label_status = new javax.swing.JLabel();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -56,8 +66,18 @@ public class RegistroAlumnos extends javax.swing.JFrame {
         });
 
         jButton2.setText("Modificar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Eliminar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Ingresa el código del alumno: ");
 
@@ -70,6 +90,13 @@ public class RegistroAlumnos extends javax.swing.JFrame {
 
         label_status.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
+        jButton5.setText("Generar PDF");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -77,25 +104,30 @@ public class RegistroAlumnos extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton4)
+                            .addComponent(label_status))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel1)
                             .addComponent(txt_nombre)
                             .addComponent(jLabel2)
-                            .addComponent(txt_grupo, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jButton1)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButton2)
-                            .addGap(18, 18, 18)
-                            .addComponent(jButton3))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel3)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txt_buscar)))
-                    .addComponent(jButton4)
-                    .addComponent(label_status))
-                .addContainerGap(133, Short.MAX_VALUE))
+                            .addComponent(txt_grupo)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton1)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton2)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton3))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txt_buscar)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                        .addComponent(jButton5)
+                        .addGap(28, 28, 28))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -112,7 +144,8 @@ public class RegistroAlumnos extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(jButton3)
+                    .addComponent(jButton5))
                 .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -128,46 +161,124 @@ public class RegistroAlumnos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
-        try{
+
+        try {
             Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/bd_ins", "root", "");
             PreparedStatement pst = cn.prepareStatement("insert into alumnos values(?,?,?)");
-            
+
             pst.setString(1, "0");
             pst.setString(2, txt_nombre.getText().trim());
             pst.setString(3, txt_grupo.getText().trim());
             pst.executeUpdate();
-            
+
             txt_nombre.setText("");
             txt_grupo.setText("");
             label_status.setText("Registro exitoso.");
-        }catch (Exception e){
-            
+        } catch (Exception e) {
+
         }
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        
-        try{
+
+        try {
             Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/bd_ins", "root", "");
             PreparedStatement pst = cn.prepareStatement("select * from alumnos where ID = ?");
             pst.setString(1, txt_buscar.getText().trim());
-            
+
             ResultSet rs = pst.executeQuery();
-            
-            if(rs.next()){
+
+            if (rs.next()) {
                 txt_nombre.setText(rs.getString("NombreAlumno"));
                 txt_grupo.setText(rs.getString("Grupo"));
             } else {
                 JOptionPane.showMessageDialog(null, "Alumno no registrado.");
             }
-            
-        }catch (Exception e){
-            
+
+        } catch (Exception e) {
+
         }
-        
+
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+        try {
+            String ID = txt_buscar.getText().trim();
+
+            Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/bd_ins", "root", "");
+            PreparedStatement pst = cn.prepareStatement("update alumnos set NombreAlumno = ?, Grupo = ? where ID = " + ID);
+
+            pst.setString(1, txt_nombre.getText().trim());
+            pst.setString(2, txt_grupo.getText().trim());
+            pst.executeUpdate();
+
+            label_status.setText("Modificación exitosa.");
+
+        } catch (Exception e) {
+        }
+
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+
+        try {
+            Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/bd_ins", "root", "");
+            PreparedStatement pst = cn.prepareStatement("delete from alumnos where ID = ?");
+
+            pst.setString(1, txt_buscar.getText().trim());
+            pst.executeUpdate();
+
+            txt_nombre.setText("");
+            txt_grupo.setText("");
+            txt_buscar.setText("");
+
+            label_status.setText("Registro eliminado.");
+
+        } catch (Exception e) {
+        }
+
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+
+       Document documento = new Document();
+       
+        try {
+            String ruta = System.getProperty("user.home");
+            PdfWriter.getInstance(documento, new FileOutputStream(ruta + "/Desktop/Reporte_Alumnos.pdf"));
+            documento.open();
+            
+            PdfPTable tabla = new PdfPTable(3);
+            tabla.addCell("Código");
+            tabla.addCell("Nombre del Alumno");
+            tabla.addCell("Grupo");
+            
+            try {
+                Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/bd_ins", "root", "");
+                PreparedStatement pst = cn.prepareStatement("select * from alumnos");
+                
+                ResultSet rs = pst.executeQuery();
+                
+                if(rs.next()){
+                                       
+                    do {                        
+                        tabla.addCell(rs.getString(1));
+                        tabla.addCell(rs.getString(2));
+                        tabla.addCell(rs.getString(3));
+                    } while (rs.next());
+                    documento.add(tabla);                    
+                }
+                
+            } catch (DocumentException | SQLException e) {
+            }
+            documento.close();
+            JOptionPane.showMessageDialog(null, "Reporte creado.");
+        } catch (DocumentException | HeadlessException | FileNotFoundException e) {
+        }
+
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -209,6 +320,7 @@ public class RegistroAlumnos extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
